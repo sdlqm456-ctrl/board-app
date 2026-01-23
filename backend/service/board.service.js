@@ -1,12 +1,19 @@
 // 2. 서버안에 기능을 만드는 부분
 
+const { totaCount } = require("../controllers/board.controller");
 const pool = require("../db"); // sql 실행하기
 
 // 1.  findAll: 전체조회
 // row2: 게시글 목록
 const service = {
-  findAll: async function () {
-    let [rows, result] = await pool.query("select * from board"); // 배열 구조분해 (비동기처리 방식)
+  findAll: async function (page) {
+    // 1 -> 0, 2 -> 10, 3 -> 20
+    // offset: 페이지를 화면에 띄울때 사용
+    const offset = (page - 1) * 10;
+    let [rows, result] = await pool.query(
+      "select * from board order by id limit 10 offset ?",
+      [offset],
+    ); // 배열 구조분해 (비동기처리 방식)
     console.log(rows);
     return rows; // controller로 rows 전달
   },
@@ -43,6 +50,12 @@ const service = {
     let [result] = await pool.query("delete * from board where id = ? ", [id]);
     console.log(req3);
     return result.affectedRows;
+  },
+  totaCount: async function (id) {
+    // board 테이블에서 설정한 id 값인 게시글을 조회
+    let [req1, res2] = await pool.query("select count(*) as cnt from board ");
+    console.log(req1);
+    return req1[0]; // {"count(*)":512}
   },
 };
 module.exports = service;

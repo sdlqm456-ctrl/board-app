@@ -6,9 +6,8 @@ const service = require("../service/board.service");
 // 1. 전체조회 (board 전체 목록을 DB에서 가져옴)
 const ctrl = {
   list: async (req, res) => {
-    // service.findAll():DB조회 (비동기)
-    // await: DB 결과가 올때까지 기다림
-    const rows = await service.findAll();
+    const page = req.params.page;
+    const rows = await service.findAll(page);
     res.send(rows);
   },
   // 2. 글 등록하기
@@ -47,6 +46,12 @@ const ctrl = {
     } else {
       res.json({ retCode: "NG" });
     }
+  },
+  // 전체건수 계산
+
+  totaCount: async (req, res) => {
+    let rows = await service.totaCount(); // 조회된 글 데이터 (실제 id가 아님)
+    res.send(rows); // {"count(*)":512}
   },
 };
 module.exports = ctrl;
