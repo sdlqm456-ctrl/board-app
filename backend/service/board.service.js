@@ -11,7 +11,7 @@ const service = {
     // offset: 페이지를 화면에 띄울때 사용
     const offset = (page - 1) * 10;
     let [rows, result] = await pool.query(
-      "select * from board order by id limit 10 offset ?",
+      "select * from board order by id desc limit 10 offset ?",
       [offset],
     ); // 배열 구조분해 (비동기처리 방식)
     console.log(rows);
@@ -32,9 +32,9 @@ const service = {
       [title, content, writer], // valuse(?,?,?) 에 전달할 값 (배열 형태로 전달)
     );
     console.log(result);
-    return result[0].insertId; // DB에 추가된 행의 id값을 돌려줌
+    return result[0].insertId; // DB에 추가된 행의 id값을 돌려줌 (신규 글번호 반환)
   },
-  // 내용 업데이트
+  // 내용 수정
   update: async function (data = {}) {
     const { title, content, id } = data; // 앞에서 가져온 값을 참조하기 위해 한번더 적음
     console.log(title, content, id);
@@ -47,13 +47,13 @@ const service = {
   },
   // 내용 삭제
   remove: async function (id) {
-    let [result] = await pool.query("delete * from board where id = ? ", [id]);
-    console.log(req3);
-    return result.affectedRows;
+    let result = await pool.query("delete from board where id = ? ", [id]);
+    console.log(result);
+    return result[0].affectedRows;
   },
   totaCount: async function (id) {
     // board 테이블에서 설정한 id 값인 게시글을 조회
-    let [req1, res2] = await pool.query("select count(*) as cnt from board ");
+    let [req1, res2] = await pool.query("select count(*) as cnt from board");
     console.log(req1);
     return req1[0]; // {"count(*)":512}
   },

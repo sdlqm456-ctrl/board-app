@@ -15,13 +15,32 @@ function loadBoards(page = 1) {
                          <td>${board.title}</td>
                          <td>${board.writer}</td>
                          <td>${svc.formatDate(new Date(board.created_at))}</td>
+                         <td><button data-no = '${board.id}' class = 'btn-delete'>삭제</button></td>
                        </tr>`;
       target.insertAdjacentHTML("beforeend", str);
     });
+    // 버튼 이벤트 (삭제)
+    document
+      .querySelectorAll("#boardList button.btn-delete")
+      .forEach((elem) => {
+        elem.addEventListener("click", function (e) {
+          const bno = this.dataset.no; // 삭제할 글 번호
+          // 삭제 fetch 호출
+          svc.removeBoard(bno, (data) => {
+            console.log(data);
+            // 성공 => 페이지 출력 / 실패 => alert (애러)
+            if (data.retCode == "OK") {
+              loadBoards(page);
+              loadPagingList();
+            } else {
+              alert("예외발생");
+            }
+          });
+        });
+      });
   });
 }
 loadBoards();
-// document.addEventListener("DOMContentLoaded", loadBoards);
 
 // 페이징 목록
 let page = 1; // page 전역번수
@@ -38,7 +57,7 @@ function loadPagingList() {
     // 계산: 실제 마지막 페이지와 비교
     endPage = endPage > realEnd ? realEnd : endPage;
     let prev = startPgae == 1 ? false : true; // startPgae가 1이면 false 아니면 true를 prev에 넣기 (조건의 결과를 뒤집고 싶을때 반대로 사용)
-    let next = page == realEnd ? false : true; // page: 현재 보고 있는 페이지 번호
+    let next = endPage < realEnd ? false : true; // page: 현재 보고 있는 페이지 번호
     // <a href="#" class="page-btn active">1</a> 숫자 버튼을 클릭했을때 다른 버튼은 비활성화
 
     // 이전페이지  <a href="#" class="page-btn next">&raquo;</a>
@@ -97,4 +116,28 @@ function loadPagingList() {
 
 loadPagingList();
 
-// createPost()
+// 등록 이벤트
+document.querySelector("button#addBtn").addEventListener("click", () => {
+  const title = document.querySelector("#title").value; // 입력값(제목)
+  const content = document.querySelector("#content").value; // 입력값(내용)
+  const writer = document.querySelector("#writer").value; // 입력값(작성자)
+
+  // 필수값 입력
+  if (!title || !content || !writer) {
+    alert("필수값을 입력하세요");
+    return;
+  }
+
+  // svc 메소드 활용
+  svc.addBoard({ title, content, writer }, (data) => {
+    // 성공
+    if (data.retCode == "OK") {
+      // 1페이지 목록 보여주기
+      page = 1;
+      loadBoards(page);
+      loadPagingList();
+    } else {
+      alert("등록 예외");
+    }
+  });
+});

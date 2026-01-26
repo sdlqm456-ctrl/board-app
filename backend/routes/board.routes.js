@@ -15,10 +15,4 @@ router.get("/detail/:id", ctrl.detail); // 데이터 단건 조회
 router.put("/:id", ctrl.update); // 내용수정
 router.delete("/:id", ctrl.remove); // 삭제요청
 
-// 라우팅
-// 연결할 서버주소: http://localhost:3000/boards
-router.get("/pg/:page", cors.list); // 서버 데이터 목록 가져오기
-router.post("/", cors.create); // 내용 등록
-router.get("/", cors.detail); // 데이터 조회
-
 module.exports = router; // Router 내보내기 (위에서 만든 요청들을 묶어서 기능들이 오면 실행하기)
