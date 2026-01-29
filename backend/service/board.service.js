@@ -25,6 +25,7 @@ const service = {
     console.log(req1);
     return req1;
   },
+  // 글 등록하기 
   create: async function (data = {}) {
     const { title, content, writer } = data; // 객체의 구조분해
     let result = await pool.query(
