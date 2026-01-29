@@ -8,8 +8,10 @@ function loadBoards(page = 1) {
   svc.getBoards(page, (data) => {
     const target = document.querySelector("#boardList"); // tbody 목록.
     target.innerHTML = "";
-    // 전체목록 출력 및 tbody에 생성.
+    // 전체목록 출력 및 tbody에 생성
     data.forEach((board) => {
+      // 데이터를 하나하나 꺼내서 화면에 출력하기
+      // 동적으로 html 테그 만들기
       const str = `<tr>
                          <td>${board.id}</td>
                          <td>${board.title}</td>
@@ -17,6 +19,7 @@ function loadBoards(page = 1) {
                          <td>${svc.formatDate(new Date(board.created_at))}</td>
                          <td><button data-no = '${board.id}' class = 'btn-delete'>삭제</button></td>
                        </tr>`;
+      // 화면에 추가하기
       target.insertAdjacentHTML("beforeend", str);
     });
     // 버튼 이벤트 (삭제)
@@ -26,6 +29,7 @@ function loadBoards(page = 1) {
         elem.addEventListener("click", function (e) {
           const bno = this.dataset.no; // 삭제할 글 번호
           // 삭제 fetch 호출
+          // data (여기서 서버처리 결과값)
           svc.removeBoard(bno, (data) => {
             console.log(data);
             // 성공 => 페이지 출력 / 실패 => alert (애러)
@@ -141,3 +145,4 @@ document.querySelector("button#addBtn").addEventListener("click", () => {
     }
   });
 });
+
